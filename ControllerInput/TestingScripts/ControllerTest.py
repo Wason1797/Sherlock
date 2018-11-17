@@ -17,6 +17,8 @@ import time
 from operator import itemgetter, attrgetter
 from itertools import count, starmap
 from pyglet import event
+import pyrebase
+import json
 
 # structs according to
 # http://msdn.microsoft.com/en-gb/library/windows/desktop/ee417001%28v=vs.85%29.aspx
@@ -45,12 +47,14 @@ class XINPUT_VIBRATION(ctypes.Structure):
     _fields_ = [("wLeftMotorSpeed", ctypes.c_ushort),
                 ("wRightMotorSpeed", ctypes.c_ushort)]
 
+
 class XINPUT_BATTERY_INFORMATION(ctypes.Structure):
     _fields_ = [("BatteryType", ctypes.c_ubyte),
                 ("BatteryLevel", ctypes.c_ubyte)]
 
+
 xinput = ctypes.windll.xinput1_4
-#xinput = ctypes.windll.xinput9_1_0  # this is the Win 8 version ?
+# xinput = ctypes.windll.xinput9_1_0  # this is the Win 8 version ?
 # xinput1_2, xinput1_1 (32-bit Vista SP1)
 # xinput1_3 (64-bit Vista SP1)
 
@@ -64,7 +68,7 @@ def struct_dict(struct):
     >>> struct_dict(XINPUT_GAMEPAD)['buttons'].__class__.__name__
     'CField'
     """
-    get_pair = lambda field_type: (
+    def get_pair(field_type): return (
         field_type[0], getattr(struct, field_type[0]))
     return dict(list(map(get_pair, struct._fields_)))
 
@@ -99,6 +103,7 @@ def gen_bit_values(number):
     while number:
         yield number & 0x1
         number >>= 1
+
 
 ERROR_DEVICE_NOT_CONNECTED = 1167
 ERROR_SUCCESS = 0
@@ -165,7 +170,8 @@ class XInputJoystick(event.EventDispatcher):
         "Control the speed of both motors seperately"
         # Set up function argument types and return type
         XInputSetState = xinput.XInputSetState
-        XInputSetState.argtypes = [ctypes.c_uint, ctypes.POINTER(XINPUT_VIBRATION)]
+        XInputSetState.argtypes = [ctypes.c_uint,
+                                   ctypes.POINTER(XINPUT_VIBRATION)]
         XInputSetState.restype = ctypes.c_uint
 
         vibration = XINPUT_VIBRATION(
@@ -178,22 +184,25 @@ class XInputJoystick(event.EventDispatcher):
         BATTERY_DEVTYPE_HEADSET = 0x01
         # Set up function argument types and return type
         XInputGetBatteryInformation = xinput.XInputGetBatteryInformation
-        XInputGetBatteryInformation.argtypes = [ctypes.c_uint, ctypes.c_ubyte, ctypes.POINTER(XINPUT_BATTERY_INFORMATION)]
-        XInputGetBatteryInformation.restype = ctypes.c_uint 
+        XInputGetBatteryInformation.argtypes = [
+            ctypes.c_uint, ctypes.c_ubyte, ctypes.POINTER(XINPUT_BATTERY_INFORMATION)]
+        XInputGetBatteryInformation.restype = ctypes.c_uint
 
-        battery = XINPUT_BATTERY_INFORMATION(0,0)
-        XInputGetBatteryInformation(self.device_number, BATTERY_DEVTYPE_GAMEPAD, ctypes.byref(battery))
+        battery = XINPUT_BATTERY_INFORMATION(0, 0)
+        XInputGetBatteryInformation(
+            self.device_number, BATTERY_DEVTYPE_GAMEPAD, ctypes.byref(battery))
 
-        #define BATTERY_TYPE_DISCONNECTED       0x00
-        #define BATTERY_TYPE_WIRED              0x01
-        #define BATTERY_TYPE_ALKALINE           0x02
-        #define BATTERY_TYPE_NIMH               0x03
-        #define BATTERY_TYPE_UNKNOWN            0xFF
-        #define BATTERY_LEVEL_EMPTY             0x00
-        #define BATTERY_LEVEL_LOW               0x01
-        #define BATTERY_LEVEL_MEDIUM            0x02
-        #define BATTERY_LEVEL_FULL              0x03
-        batt_type = "Unknown" if battery.BatteryType == 0xFF else ["Disconnected", "Wired", "Alkaline","Nimh"][battery.BatteryType]
+        # define BATTERY_TYPE_DISCONNECTED       0x00
+        # define BATTERY_TYPE_WIRED              0x01
+        # define BATTERY_TYPE_ALKALINE           0x02
+        # define BATTERY_TYPE_NIMH               0x03
+        # define BATTERY_TYPE_UNKNOWN            0xFF
+        # define BATTERY_LEVEL_EMPTY             0x00
+        # define BATTERY_LEVEL_LOW               0x01
+        # define BATTERY_LEVEL_MEDIUM            0x02
+        # define BATTERY_LEVEL_FULL              0x03
+        batt_type = "Unknown" if battery.BatteryType == 0xFF else [
+            "Disconnected", "Wired", "Alkaline", "Nimh"][battery.BatteryType]
         level = ["Empty", "Low", "Medium", "Full"][battery.BatteryLevel]
         return batt_type, level
 
@@ -239,7 +248,7 @@ class XInputJoystick(event.EventDispatcher):
             # done by feel rather than following http://msdn.microsoft.com/en-gb/library/windows/desktop/ee417001%28v=vs.85%29.aspx#dead_zone
             # ags, 2014-07-01
             if ((old_val != new_val and (new_val > 0.08000000000000000 or new_val < -0.08000000000000000) and abs(old_val - new_val) > 0.00000000500000000) or
-               (axis == 'right_trigger' or axis == 'left_trigger') and new_val == 0 and abs(old_val - new_val) > 0.00000000500000000):
+                    (axis == 'right_trigger' or axis == 'left_trigger') and new_val == 0 and abs(old_val - new_val) > 0.00000000500000000):
                 self.dispatch_event('on_axis', axis, new_val)
 
     def dispatch_button_events(self, state):
@@ -268,6 +277,7 @@ class XInputJoystick(event.EventDispatcher):
 
     def on_missed_packet(self, number):
         pass
+
 
 list(map(XInputJoystick.register_event_type, [
     'on_state_changed',
@@ -346,6 +356,8 @@ def sample_first_joystick():
 
     @j.event
     def on_button(button, pressed):
+        if button == 14:
+            print("Success")
         print('button', button, pressed)
 
     left_speed = 0
@@ -354,17 +366,17 @@ def sample_first_joystick():
     @j.event
     def on_axis(axis, value):
         left_speed = 0
-        right_speed = 0
-        
-        if axis is "l_thumb_y" and value >0.4:
+        right_speed = 0        
+        if axis is "l_thumb_y" and value > 0.4:
             print('axis forward', axis, value)
+            # db.child("sherlock").update({"movement_comand": "forward"})            
         elif axis is "l_thumb_y" and value < -0.4:
             print('axis backwards', axis, value)
-        elif axis is "l_thumb_x" and value >0.4:
+        elif axis is "l_thumb_x" and value > 0.4:
             print('axis right', axis, value)
         elif axis is "l_thumb_x" and value < -0.4:
-            print('axis left', axis, value)
-        
+            print('axis left', axis, value)       
+       
         if axis == "left_trigger":
             left_speed = value
         elif axis == "right_trigger":
@@ -375,6 +387,11 @@ def sample_first_joystick():
         j.dispatch_events()
         time.sleep(.01)
 
+
 if __name__ == "__main__":
+    with open('auth_files\\authconfig.json') as handle:
+        config = json.loads(handle.read())
+    firebase = pyrebase.initialize_app(config)
+    db = firebase.database()
     sample_first_joystick()
-    # determine_optimal_sample_rate()
+# determine_optimal_sample_rate()
