@@ -47,7 +47,7 @@ TODO
 - [GPS driver](https://github.com/androidthings/contrib-drivers/tree/master/gps)
 - [GPS example](https://github.com/androidthings/drivers-samples/tree/master/gps)
 - [Xbox360 Controller](https://github.com/martinohanlon/XboxController)
-- [Live Streaming](https://github.com/pedroSG94/rtmp-rtsp-stream-client-java)
-- [Android Things Overview](https://github.com/Nilhcem/smarthome-androidthings) __This one in particular was incredibly helpfull__
+- [Live Streaming](https://github.com/pedroSG94/rtmp-rtsp-stream-client-java) __This one in particular was incredibly helpfull__
+- [Android Things Overview](https://github.com/Nilhcem/smarthome-androidthings) 
 
 - TODO (add more of the used repos)
