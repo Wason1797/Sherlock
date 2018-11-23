@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Sherlock</title>
+    <!-- Firebase additions, search in firebase documentation to see another anotation, depending what you need -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-database.js"></script>
+    <!-- This style was ignored, it contains firebase database connection, chack xample.js to make your index.js -->
+    <script src="js/index.js"></script>
+</head>
+
+<body onload="charge()">
+    <table>
+        <thead>
+            <tr>
+                <th>Streaming</th>
+                <th>Map</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="video">
+                    <!-- Change src to you live stream video url -->
+                    <iframe src="https://www.youtube.com" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                </td>
+                <td class="google-maps">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d63836.70876889837!2d-78.50399263809815!3d-0.19882384292319943!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2sec!4v1542492970462">
+                    </iframe>
+                </td>
+            </tr>
+            <tr>
+                <th>Vision</th>
+                <th>Log</th>
+            </tr>
+            <tr>
+                <td class="left">
+                    <div id="gps"></div>
+                </td>
+                <td>
+                    <div id="log"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
