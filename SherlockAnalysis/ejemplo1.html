@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sherlock  Detection</title>
+    <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
+</head>
+ 
+<body>
+        
+    <v-app id="app" dark standalone>
+       <v-toolbar >  
+           <v-toolbar-title fixed dark>Face Detection</v-toolbar-title>
+        </v-toolbar>
+      
+        
+        <main>
+            <v-container fluid>
+                <v-layout row wrap>
+                    <v-flex xs12 sm12 md6 lg6 xl6>
+                        <video id="video" width="600" height="480" autoplay></video>
+                        <canvas id="canvas" width="600" height="480" style="display: none;"></canvas>
+                        <v-btn @click.native="process" block secondary dark>
+                            <v-icon left>camera_alt</v-icon> Snap and Analyze</v-btn>
+                    </v-flex>
+                    <v-flex xs12 sm12 md6 lg6 xl6>
+                        <h1 class="white--text">Result:</h1>
+                        <div class="text-xs-center" v-show="loader">
+                            <v-progress-circular indeterminate v-bind:size="100" v-bind:width="3" class="yellow--text"></v-progress-circular>
+                        </div>
+                        <div v-show="result" id="labels"></div>
+                        </div>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </main>
+    </v-app>
+
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuetify/dist/vuetify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.2/axios.min.js"></script>
+    <script>
+        var labels=[];
+        const vm = new Vue({
+            el: "#app",
+            data: {
+                loader: false,
+                result: false,
+                apiKey: "",
+                data: {
+                    "requests": [{
+                        "features": [{
+                            "type": "LABEL_DETECTION"
+                        }],
+                        "image": {
+                            "content": null
+                        }
+                    }]
+                }
+            },
+            
+            methods: {
+                process() {
+                    const self = this;
+                    this.result = false;
+                    this.loader = true;
+                    context.drawImage(video, 0, 0, 640, 480);
+                    const base64 = canvas.toDataURL();
+                    const final = base64.replace("data:image/png;base64,", "");
+                    this.data.requests[0].image.content = final;
+                    axios.post(
+                        `https://vision.googleapis.com/v1/images:annotate?key= AIzaSyCHlDw10S-XY_ioDbYm9asKIR4PR0odcqQ`,
+                        this.data).then(response => {
+                            labels=[];
+                           // alert(response.data.responses[0].labelAnnotations);
+                           response.data.responses[0].labelAnnotations.forEach(function(element) 
+                           {
+                               labels.push(element.description);
+                           });
+                       
+                        self.loader = false;
+                        self.result = true;
+                        document.getElementById("labels").innerHTML = labels;
+                        console.log(result)
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                }
+            }
+        })
+ 
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const video = document.getElementById('video');
+ 
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+           navigator.mediaDevices.getUserMedia({
+               video: true
+           }).then(stream => {
+               video.src = window.URL.createObjectURL(stream);
+                video.play();
+            });
+        }
+        
+    </script>
+</body>
+ 
+</html>
