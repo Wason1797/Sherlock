@@ -46,7 +46,7 @@ if __name__ == '__main__':
             control_remote_db("movement_command", "forward")
         elif int(yValue) == -100:
             print("backwards")
-            control_remote_db("movement_command", "backwards")
+            control_remote_db("movement_command", "backward")
         elif int(yValue) == 0:
             print("still")
             control_remote_db("movement_command", "still")
