@@ -28,7 +28,7 @@ Some features of the remote control center used to operate Sherlock.
    1. To activate the video stream you press the A button
    1. To stop it the B button
    1. You can watch the progress in the web dashboard
-   1. Through the web dashboard, you can analyses the video stream with google cloud vision
+   1. Through the web dashboard, you can analyze the video stream with google cloud vision
 
 
 
