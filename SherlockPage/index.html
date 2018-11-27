@@ -11,11 +11,13 @@
   <!-- This js was ignored, it contains firebase database connection, chack xample.js to make your index.js -->
   <script src="js/index.js"></script>
   <!-- This script allows you connect with google maps apli, change the key YOURKEY with the google maps api -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOURKEY">
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3m3hDCV5tjt9c8MkMXuiG3KAMzp4wNxw&callback=initMap">
   </script>
   <!-- Firebase additions, search in firebase documentation to see another anotation, depending what you need -->
   <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-database.js"></script>
+  <!-- This link change the web page icon, change this by the web page icon or the company logo -->
+  <link rel="icon" href="img/sherlock.png"/>
 </head>
 
 <body onload="charge()">
@@ -35,7 +37,7 @@
           </iframe>
         </td>
         <td>
-          <div id="map"></div>
+          <div id="map" class="gps"></div>
         </td>
       </tr>
       <tr>
