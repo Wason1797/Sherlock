@@ -1,4 +1,4 @@
-package com.example.wason.sherlockbot
+package com.clubsoftware.sherlockbot
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.example.wason.sherlockvideo", appContext.packageName)
+        assertEquals("com.clubsoftware.sherlockbot", appContext.packageName)
     }
 }

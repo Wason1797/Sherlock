@@ -1,17 +1,13 @@
-package com.example.wason.sherlockbot
+package com.clubsoftware.sherlockbot.HardwareControllers
 
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
 
-
-class MotorController// Right
-// Left
-    () {
-
-    //internal var service = PeripheralManager() // be aware DP7 breaks compatibility
+class MotorController {
+    //Motor 1
     private var pin1Motor1: Gpio
     private var pin2Motor1: Gpio
-
+    //Motor 2
     private var pin1Motor2: Gpio
     private var pin2Motor2: Gpio
 
@@ -28,11 +24,11 @@ class MotorController// Right
 
 
     fun forward() {
-        setPinValues(true, false, false, true)
+        setPinValues(true, false, true, false)
     }
 
     fun backward() {
-        setPinValues(false, true, true, false)
+        setPinValues(false, true, false, true)
     }
 
     fun stop() {
@@ -40,7 +36,7 @@ class MotorController// Right
     }
 
     fun turnLeft() {
-        setPinValues(false, false, false, true)
+        setPinValues(false, false, true, false)
     }
 
     fun turnRight() {
@@ -56,5 +52,4 @@ class MotorController// Right
         pin2Motor2.value = p22
 
     }
-
 }

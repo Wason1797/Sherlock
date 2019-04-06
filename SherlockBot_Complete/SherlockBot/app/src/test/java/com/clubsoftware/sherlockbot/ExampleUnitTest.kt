@@ -1,4 +1,4 @@
-package com.example.wason.sherlockbot
+package com.clubsoftware.sherlockbot
 
 import org.junit.Test
 
